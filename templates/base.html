@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StockFlow - Controle de Estoque de SSDs{% endblock %}</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Skip to Main Content Link for accessibility -->
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+    {% if session.get('logged_in') %}
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" role="navigation" aria-label="Menu Principal">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">
+                <i class="fa-solid fa-server" aria-hidden="true"></i>
+            </div>
+            <div class="sidebar-brand-name">StockFlow</div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if request.path == '/' or request.path == '/dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('entradas') }}" class="sidebar-link {% if request.path == '/entradas' %}active{% endif %}">
+                    <i class="fa-solid fa-arrow-down-long" aria-hidden="true"></i>
+                    <span>Entradas</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('saidas') }}" class="sidebar-link {% if request.path == '/saidas' %}active{% endif %}">
+                    <i class="fa-solid fa-arrow-up-long" aria-hidden="true"></i>
+                    <span>Saídas</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar" aria-hidden="true">AD</div>
+                <div class="user-details">
+                    <span class="user-name">Administrador</span>
+                    <span class="user-role">Admin</span>
+                </div>
+            </div>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm" style="width: 100%;" aria-label="Sair da conta de Administrador">
+                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                <span>Sair</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content" role="main">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-banner alert-banner-{{ category }}" id="alert-{{ loop.index }}" role="status" aria-live="polite">
+                        <div class="alert-message">
+                            {% if category == 'success' %}
+                                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                            {% else %}
+                                <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                        <button class="alert-close" onclick="document.getElementById('alert-{{ loop.index }}').remove()" aria-label="Fechar mensagem">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+    {% else %}
+        <!-- Main Content Area for Login -->
+        <main id="main-content" role="main">
+            {% block login_content %}{% endblock %}
+        </main>
+    {% endif %}
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/accessibility.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+
+    <!-- VLibras Widget (Floating) -->
+    <div id="vlibras-widget" class="vlibras-float" aria-hidden="true">
+        <div vw class="enabled">
+            <div vw-access-button class="active"></div>
+
+            <div vw-plugin-wrapper>
+                <div class="vw-plugin-top-wrapper"></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+</body>
+</html>
